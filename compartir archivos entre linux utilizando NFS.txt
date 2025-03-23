@@ -1,0 +1,56 @@
+NFS-utils
+
+sudo dnf install -y nfs-utils
+
+Iniciamos y habilitamos nfs
+
+systemctl start nfs-server
+systemctl enable nfs-server --now
+systemctl status nfs-server
+
+------------------------------------------------------
+Cliente....
+
+sudo dnf install nfs-utils nfs4-acl-tools -y
+systemctl start nfs-server
+systemctl enable nfs-server --now
+systemctl status nfs-server
+
+Configuracion del host
+
+sudo mkdir -p /var/nfs/SO3
+cd /var/nfs/SO3
+touch Adrian{1..100}.txt
+ls
+----------------------------------------------------
+Espesificamos que vamos a expotar 
+
+nano /etc/exports
+	/var/nfs/SO3 nuestra red/24(rw,sync,no_root_squash)
+sudo exportfs -arv
+sudo chmod 766 /var/nfs/SO3
+sudo chown nobody:nobody /var/nfs/SO3
+
+
+sudo firewall-cmd --permanent --add-service=nfs
+sudo firewall-cmd --permanent --add-service=rpc-bind
+sudo firewall-cmd --permanent --add-service=mountd
+sudo firewall-cmd --reload
+-----------------------------------------------------------------
+Cliente
+
+sudo firewall-cmd --permanent --add-service=nfs
+sudo firewall-cmd --permanent --add-service=rpc-bind
+sudo firewall-cmd --permanent --add-service=mountd
+sudo firewall-cmd --reload
+
+sudo mkdir -p /mnt/SO3
+sudo mount -t nfs 192.168.1.206:/var/nfs/SO3 /mnt/SO3
+
+df -h
+
+cd /nfs/SO3/
+ls
+
+sudo nano /etc/fstab
+	10.0.0.200:/var/nfs/SO3 mnt/SO3 nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0

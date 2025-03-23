@@ -1,0 +1,38 @@
+sudo dnf install samba samba-client samba-common -y
+
+systemctl start smb
+systemctl enable smb
+systemctl start smb
+systemctl enable smb
+
+sudo mkdir -p /srv/samba/Adrian
+sudo chmod -R 0777 /srv/samba/Adrian
+sudo chown nobody:nobody /srv/samba/Andrian
+sudo chcon -t samba_share_t /srv/samba/Adrian
+
+cd /srv/samba/Adrian/
+sudo touch adrian{1..100}.txt
+
+sudo firewall-cmd --add-service=samba --permanent
+sudo firewall-cmd --reload
+
+sudo nano /etc/samba/smb.conf
+
+[public]
+         path = /srv/samba/Adrian
+         browsable = yes
+         writable = yes
+         guest ok = yes
+         read only = no
+
+sudo groupadd sambausers
+sudo useradd  SO3 -p 12345
+sudo usermod -aG sambausers SO3
+sudo smbpasswd -a SO3 (12345)
+groups SO3
+
+sudo systemctl restart nmb
+sudo systemctl restart smb
+
+entramos desde VM windows a la IP: 192.168.1.206
+        
